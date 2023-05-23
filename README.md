@@ -1,6 +1,6 @@
 # dataflow
 
-
+dataflow processing data flow and views, which can subscribe to data change events, as well as view update window.
 ```py
 from oy3opy.dataflow import *
 
