@@ -14,15 +14,25 @@ class App(View):
 
         super().__init__(flow, self.height, offset)
 
+        self.fullscroll = fullscroll
         self.bottomscroll = bottomscroll
-        input.onmouse(input.SCROLL_DOWN, lambda *_: self.mouse_down())
-        input.onmouse(input.SCROLL_UP, lambda *_: self.mouse_up())
-
-        self.subscribe('update', lambda *_: self.render())
-        if fullscroll:
+        self.__stop = False
+        if self.fullscroll:
             self.subscribe('full', lambda view: view.autoscroll())
 
-    def render(self):
+    def listen(self):
+        input.onmouse(input.SCROLL_DOWN, self.mouse_down)
+        input.onmouse(input.SCROLL_UP, self.mouse_up)
+        self.subscribe('update', self.render)
+        self.__stop = False
+    def stop(self):
+        input.offmouse(input.SCROLL_DOWN, self.mouse_down)
+        input.offmouse(input.SCROLL_UP, self.mouse_up)
+        self.unsubscribe('update', self.render)
+        self.__stop = True
+    def render(self, *args):
+        if self.__stop:
+            return
         if self.bottomscroll:
             self.scroll = ((len(self) == self.height) and (self.offset + len(self) == len(self.flow)))
         self.viewer.erase()
@@ -34,16 +44,22 @@ class App(View):
         self.viewer.erase()
         self.viewer.refresh()
 
-    def mouse_up(self):
+    def mouse_up(self, *args):
+        if self.__stop:
+            return
         self.curs_up()
         self.render()
 
-    def mouse_down(self):
+    def mouse_down(self, *args):
+        if self.__stop:
+            return
         self.curs_down()
         self.render()
     
     def __enter__(self):
+        self.listen()
         return self
     
     def __exit__(self, exc_type, exc_value, traceback):
+        self.stop()
         self.close()

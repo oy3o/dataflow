@@ -69,7 +69,7 @@ class View:
         self.offset = offset
         self.overflow = overflow 
         self.scroll = scroll
-        self.mark = 0 # self.offset = max(0,  > 0)
+        self.mark = 0
         self.flow.subscribe('update', lambda *_: self.update()) 
         self.flow.subscribe('append', lambda *_: self.markto(1))
         self.flow.subscribe('remove', lambda *_: self.markto(-1)) 
@@ -84,19 +84,19 @@ class View:
         else:
             return False 
 
-    def curs_down(self, n=1):
-        if self.overflow or (self.offset + self.height < len(self.flow)):
+    def curs_down(self, n=1, force=False):
+        if force or self.overflow or (self.offset + self.height < len(self.flow)):
             self.offset += n
             return True
         else:
-            return False 
-    def curs_to(self, pos):
-        if self.overflow or (0 <= pos <= len(self.flow) - self.height):
-            self.offset = pos
-            return True 
-        else:
             return False
-    
+
+    def curs_to(self, pos):
+        if self.overflow or ((0 <= pos ) and (pos <= len(self.flow) - self.height)):
+            self.offset = pos
+        else:
+            self.offset = max(0, min(len(self.flow) - self.height, pos))
+
     def autoscroll(self):
         self.scroll = True
 

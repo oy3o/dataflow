@@ -33,6 +33,7 @@ import time
 
 screen = curses.initscr()
 screen.keypad(True) 
+curses.start_color()
 curses.noecho()
 curses.cbreak()
 curses.raw()
