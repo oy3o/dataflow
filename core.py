@@ -37,7 +37,7 @@ class Flow(list):
     def change(self, index, newItem):
         oldItem = self[index]
         self[index] = newItem
-        self.trigger('change', oldItem, newItem)
+        self.trigger('change', index, newItem, oldItem)
         self.trigger('update', self)
         return oldItem
 
@@ -59,7 +59,6 @@ class Flow(list):
 
         if change:
             self.trigger('update', self)
-
 
 @subscribe(['update','full'])
 class View:
