@@ -1,5 +1,5 @@
 import oy3opy.input as input
-from oy3opy.utils.string import maxwidth
+from oy3opy.utils.string import string_width_fits
 from .core import View, Flow, Callable
 
 class App(View):
@@ -43,7 +43,7 @@ class App(View):
                 raise ValueError(f'{self.__len__()},{self.flow.__len__()}')
 
         for i, item in enumerate(self.window()):
-            self.view.addstr(i, 0, maxwidth(str(item), self.width - 1))
+            self.view.addstr(i, 0, string_width_fits(str(item), self.width - 1))
             self.view.clrtoeol()
         self.view.refresh()
         self.afterRender()
